@@ -3,6 +3,7 @@ package com.example.getlocation;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -27,6 +28,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.telephony.SmsManager;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         ORIENTATIONS.append(Surface.ROTATION_270,180);
     }
 
+    //ok
     //camera
     private String cameraId;
     private CameraDevice cameraDevice;
@@ -413,6 +416,42 @@ public class MainActivity extends AppCompatActivity {
         mBackgroundThread = new HandlerThread("Camera Background");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+    }
+
+    public void sendSMS(View view){
+        int permissionCheck= ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS);
+
+        if(permissionCheck==PackageManager.PERMISSION_GRANTED){
+
+            MyMessage();
+        }
+
+        else{
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},0);
+        }
+    }
+
+    private void MyMessage() {
+
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.add("7983105956");
+        arrayList.add("8630199070");
+        //arrayList.add("8126568652");
+
+        //String Message="Help me nigga!";
+        SmsManager smsManager = SmsManager.getDefault();
+
+        for (String string : arrayList) {
+            smsManager.sendTextMessage(string, null, "APP is ready brooo!", null, null);
+        }
+        /*String phoneNumber=txt_pNumber.getText().toString().trim();
+        String Message="Help me nigga!";
+
+        SmsManager smsManager=SmsManager.getDefault();
+        smsManager.sendTextMessage(phoneNumber,null,Message,null,null);
+        */
+        Toast.makeText(this, "sent", Toast.LENGTH_SHORT).show();
+
     }
 
 }
