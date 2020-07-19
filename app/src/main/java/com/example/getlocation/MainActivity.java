@@ -224,7 +224,12 @@ public class MainActivity extends AppCompatActivity {
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION,ORIENTATIONS.get(rotation));
 
-            file = new File(Environment.getExternalStorageDirectory()+"/"+ UUID.randomUUID().toString()+".jpg");
+            File root = new File(Environment.getExternalStorageDirectory()+"/shield app/");
+            if(!root.exists()){
+                root.mkdirs();
+            }
+            file = new File(Environment.getExternalStorageDirectory()+"/shield app/"+UUID.randomUUID().toString()+".jpg");
+
             ImageReader.OnImageAvailableListener readerLister = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader imageReader) {
