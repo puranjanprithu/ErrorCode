@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
         //Checking for Permission
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
-            //REQUEST PERMission SINCE PERMISSION IS NOT GRANTED
+            //REQUEST PERMISSION SINCE PERMISSION IS NOT GRANTED
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
         else{
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //-------------------------------------< Locations Service <--------------------------------------------------------
+    //-----------------------------------------------< Locations Service ~ bhaji <--------------------------------------------------------
 
     public class LocationBroadcastReciver extends BroadcastReceiver {
 
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //---------------------------------------------< Camera Service <------------------------------------------------
+    //---------------------------------------------< Camera Service ~ milannzz <------------------------------------------------
 
     private void takePicture() {
         if(cameraDevice == null)
@@ -241,9 +241,33 @@ public class MainActivity extends AppCompatActivity {
             if(!root.exists()){
                 root.mkdirs();
             }
-            // File creation
+            // File Creation
             file = new File(Environment.getExternalStorageDirectory()+"/shieldapp/images/testing.jpg");
-            
+
+            //---------------------------------------------> Upload Image to Firebase ~ milannzz <------------------------------------------------
+
+            StorageReference storageReference;
+            storageReference  = FirebaseStorage.getInstance().getReference();
+
+            Uri upfile = Uri.fromFile(file);
+            StorageReference riversRef = storageReference.child("images/"+"IMG"+UUID.randomUUID().toString()+".jpg");
+
+            riversRef.putFile(upfile)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // Handle sucessful uploads
+                            Toast.makeText(MainActivity.this, "Image Uploaded", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
             ImageReader.OnImageAvailableListener readerLister = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader imageReader) {
@@ -428,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
 
-    // -------------------------------------> SMS Service <--------------------------------------------------------
+    // -------------------------------------> SMS Service ~ muku <--------------------------------------------------------
 
     public void sendSMS(View view){
         int permissionCheck= ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS);
@@ -458,7 +482,6 @@ public class MainActivity extends AppCompatActivity {
         }
         /*String phoneNumber=txt_pNumber.getText().toString().trim();
         String Message="Help me nigga!";
-
         SmsManager smsManager=SmsManager.getDefault();
         smsManager.sendTextMessage(phoneNumber,null,Message,null,null);
         */

@@ -21,26 +21,32 @@
         android:id="@+id/textureView"
         android:layout_width="1px"
         android:layout_height="1px"/>
-
-    <Button
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="25dp"
-        android:id="@+id/btnCapture"
-        android:text="Take Picture"
+    <LinearLayout
+        android:layout_margin="25dp"
         android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="80dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:id="@+id/smsbutton"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="sendSMS"
-        android:text="@string/send_sms" />
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_marginRight="25dp"
+
+            android:id="@+id/smsbutton"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:onClick="sendSMS"
+            android:text="@string/send_sms" />
+
+        <Button
+            android:layout_marginLeft="30dp"
+            android:id="@+id/btnCapture"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Take Picture" />
+
+    </LinearLayout>
+
+
+
 
 </RelativeLayout>
