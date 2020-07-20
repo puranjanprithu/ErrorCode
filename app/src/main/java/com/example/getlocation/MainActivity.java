@@ -50,11 +50,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
-    //Camera Button
+
+    // Declaring Camera Button and Texture View
     private Button btnCapture;
     private TextureView textureView;
-    // check orientation
 
+    // Check orientation
     private static final SparseIntArray ORIENTATIONS  = new SparseIntArray();
     static {
         ORIENTATIONS.append(Surface.ROTATION_0,90);
@@ -63,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
         ORIENTATIONS.append(Surface.ROTATION_270,180);
     }
 
-    //ok
-    //camera
+    // Camera
     private String cameraId;
     private CameraDevice cameraDevice;
     private CameraCaptureSession cameraCaptureSessions;
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private Size imageDimension;
     private ImageReader imageReader;
 
-    // save file
+    // Save File
     private File file;
     private static final int REQUEST_CAMERA_PREMISSION = 200;
     private boolean mflashSupported;
@@ -84,20 +84,17 @@ public class MainActivity extends AppCompatActivity {
         public void onOpened(@NonNull CameraDevice camera) {
             cameraDevice = camera;
             createCameraPreview();
-
         }
 
         @Override
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             cameraDevice.close();
-
         }
 
         @Override
         public void onError(@NonNull CameraDevice cameraDevice, int i) {
             cameraDevice.close();
             cameraDevice=null;
-
         }
     };
 
@@ -109,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         // Camera Button and TextureView
         textureView = findViewById(R.id.textureView);
         assert textureView !=null;
+
         textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surfaceTexture, int i, int i1) {
@@ -130,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        // Taking Picture
         btnCapture = findViewById(R.id.btnCapture);
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Checking for Permission
-
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             //REQUEST PERMission SINCE PERMISSION IS NOT GRANTED
@@ -149,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             startService();
         }
     }
-    //Creating a method to start the service
+    // Creating a method to start the location service
     void startService() {
         LocationBroadcastReciver reciver = new LocationBroadcastReciver();
         IntentFilter filter = new IntentFilter("act_location");
@@ -158,8 +157,7 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
     }
 
-    // TO check if user has pressed yes or no
-
+    // To Check If User Has Provided Required Persmisions
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -175,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //-------------------------------------< Locations Service <--------------------------------------------------------
 
     public class LocationBroadcastReciver extends BroadcastReceiver {
 
@@ -196,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //---------------------------------------------< Camera Service <------------------------------------------------
+
     private void takePicture() {
         if(cameraDevice == null)
             return;
@@ -206,7 +207,8 @@ public class MainActivity extends AppCompatActivity {
             if(characteristics != null)
                 jpegSize = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
                         .getOutputSizes(ImageFormat.JPEG);
-            // capture image with custom size
+
+            // Capture Image With Custom Size
             int width = 640;
             int height = 480;
             if(jpegSize != null && jpegSize.length > 0 )
@@ -214,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 width = jpegSize[0].getWidth();
                 height = jpegSize[0].getWidth();
             }
+
             final ImageReader reader = ImageReader.newInstance(width,height, ImageFormat.JPEG,1);
             List<Surface> outputSurface = new ArrayList<>(2);
             outputSurface.add(reader.getSurface());
@@ -223,14 +226,16 @@ public class MainActivity extends AppCompatActivity {
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
-            // check rotation
+            // Check Rotation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION,ORIENTATIONS.get(rotation));
 
+            // Folder Creation
             File root = new File(Environment.getExternalStorageDirectory()+"/shield app/");
             if(!root.exists()){
                 root.mkdirs();
             }
+            // File creation
             file = new File(Environment.getExternalStorageDirectory()+"/shield app/"+UUID.randomUUID().toString()+".jpg");
 
             ImageReader.OnImageAvailableListener readerLister = new ImageReader.OnImageAvailableListener() {
@@ -417,6 +422,8 @@ public class MainActivity extends AppCompatActivity {
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
+
+    // -------------------------------------> SMS Service <--------------------------------------------------------
 
     public void sendSMS(View view){
         int permissionCheck= ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS);
