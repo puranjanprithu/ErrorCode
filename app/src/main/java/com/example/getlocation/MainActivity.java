@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -181,7 +182,11 @@ public class MainActivity extends AppCompatActivity {
 
     //-----------------------------------------------< Locations Service ~ bhaji <--------------------------------------------------------
 
+    public String smslink;
+
     public class LocationBroadcastReciver extends BroadcastReceiver {
+
+
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -193,9 +198,11 @@ public class MainActivity extends AppCompatActivity {
                 String strlat = Double.toString(lat);
                 String strlongitude = Double.toString(longitude);
 
-                String link = "www.google.com/maps/search/?api=1&query="+strlat+","+strlongitude;
+                String link = "www.google.com/maps/search/?api=1&query=" + strlat + "," + strlongitude;
 
                 Toast.makeText(MainActivity.this, link, Toast.LENGTH_LONG).show();
+
+                smslink = link;
 
             }
         }
@@ -470,15 +477,16 @@ public class MainActivity extends AppCompatActivity {
     private void MyMessage() {
 
         ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add("7983105956");
-        arrayList.add("8630199070");
+        arrayList.add("8126568652");
+        arrayList.add("9193229791");
         //arrayList.add("8126568652");
 
         //String Message="Help me nigga!";
         SmsManager smsManager = SmsManager.getDefault();
 
+        String l = smslink;
         for (String string : arrayList) {
-            smsManager.sendTextMessage(string, null, "APP is ready brooo!", null, null);
+            smsManager.sendTextMessage(string, null, "I'm in Danger, link of my location "+l, null, null);
         }
         /*String phoneNumber=txt_pNumber.getText().toString().trim();
         String Message="Help me nigga!";
