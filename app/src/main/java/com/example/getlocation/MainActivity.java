@@ -24,6 +24,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -38,6 +39,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -141,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
         //Checking for Permission
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
-            //REQUEST PERMission SINCE PERMISSION IS NOT GRANTED
+            //REQUEST PERMISSION SINCE PERMISSION IS NOT GRANTED
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
         else{
@@ -173,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //-------------------------------------< Locations Service <--------------------------------------------------------
+    //-----------------------------------------------< Locations Service ~ bhaji <--------------------------------------------------------
 
     public class LocationBroadcastReciver extends BroadcastReceiver {
 
@@ -195,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //---------------------------------------------< Camera Service <------------------------------------------------
+    //---------------------------------------------< Camera Service ~ milannzz <------------------------------------------------
 
     private void takePicture() {
         if(cameraDevice == null)
@@ -231,12 +237,36 @@ public class MainActivity extends AppCompatActivity {
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION,ORIENTATIONS.get(rotation));
 
             // Folder Creation
-            File root = new File(Environment.getExternalStorageDirectory()+"/shield app/");
+            File root = new File(Environment.getExternalStorageDirectory()+"/shieldapp/images");
             if(!root.exists()){
                 root.mkdirs();
             }
-            // File creation
-            file = new File(Environment.getExternalStorageDirectory()+"/shield app/"+UUID.randomUUID().toString()+".jpg");
+            // File Creation
+            file = new File(Environment.getExternalStorageDirectory()+"/shieldapp/images/testing.jpg");
+
+            //---------------------------------------------> Upload Image to Firebase ~ milannzz <------------------------------------------------
+
+            StorageReference storageReference;
+            storageReference  = FirebaseStorage.getInstance().getReference();
+
+            Uri upfile = Uri.fromFile(file);
+            StorageReference riversRef = storageReference.child("images/"+"IMG"+UUID.randomUUID().toString()+".jpg");
+
+            riversRef.putFile(upfile)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // Handle sucessful uploads
+                            Toast.makeText(MainActivity.this, "Image Uploaded", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                        }
+                    });
 
             ImageReader.OnImageAvailableListener readerLister = new ImageReader.OnImageAvailableListener() {
                 @Override
@@ -279,7 +309,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    Toast.makeText(MainActivity.this,"Saved"+file,Toast.LENGTH_SHORT).show();
                     createCameraPreview();
                 }
             };
@@ -423,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
 
-    // -------------------------------------> SMS Service <--------------------------------------------------------
+    // -------------------------------------> SMS Service ~ muku <--------------------------------------------------------
 
     public void sendSMS(View view){
         int permissionCheck= ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS);
@@ -453,11 +482,10 @@ public class MainActivity extends AppCompatActivity {
         }
         /*String phoneNumber=txt_pNumber.getText().toString().trim();
         String Message="Help me nigga!";
-
         SmsManager smsManager=SmsManager.getDefault();
         smsManager.sendTextMessage(phoneNumber,null,Message,null,null);
         */
-        Toast.makeText(this, "sent", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Message Sent", Toast.LENGTH_SHORT).show();
 
     }
 
